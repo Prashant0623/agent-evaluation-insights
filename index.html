@@ -1,280 +1,729 @@
-
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font-sans); }
-  .wrap { padding: 1.5rem 0; }
-  .section-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
-  .filter-btn { font-size: 12px; padding: 5px 12px; border-radius: 99px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .15s; }
-  .filter-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.1rem; cursor: pointer; transition: border-color .15s; }
-  .card:hover { border-color: var(--color-border-primary); }
-  .card.selected { border: 1.5px solid var(--color-border-info); }
-  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-  .card-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); line-height: 1.4; }
-  .rank-badge { font-size: 11px; font-weight: 500; min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .rank-qw { background: var(--color-background-success); color: var(--color-text-success); }
-  .rank-sb { background: var(--color-background-warning); color: var(--color-text-warning); }
-  .rank-lt { background: var(--color-background-secondary); color: var(--color-text-secondary); }
-  .pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-  .pill { font-size: 11px; padding: 2px 8px; border-radius: 99px; }
-  .pill-cat { background: var(--color-background-secondary); color: var(--color-text-secondary); }
-  .pill-freq { background: var(--color-background-info); color: var(--color-text-info); }
-  .bars { display: flex; flex-direction: column; gap: 5px; }
-  .bar-row { display: flex; align-items: center; gap: 6px; }
-  .bar-label { font-size: 11px; color: var(--color-text-secondary); width: 56px; flex-shrink: 0; }
-  .bar-track { flex: 1; height: 5px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; }
-  .bar-impact { background: #3B8BD4; }
-  .bar-effort { background: #E24B4A; }
-  .bar-feasibility { background: #1D9E75; }
-  .bar-datadep { background: #BA7517; }
-  .bar-val { font-size: 11px; color: var(--color-text-tertiary); width: 24px; text-align: right; }
-  .tier-label { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; display: inline-block; }
-  .tier-qw { background: var(--color-background-success); color: var(--color-text-success); }
-  .tier-sb { background: var(--color-background-warning); color: var(--color-text-warning); }
-  .tier-lt { background: var(--color-background-secondary); color: var(--color-text-secondary); }
-  .summary-note { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin-top: 8px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 8px; }
-  .detail-panel { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-top: 1.5rem; display: none; }
-  .detail-panel.visible { display: block; }
-  .detail-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-  .detail-metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
-  .detail-metric-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
-  .detail-metric-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
-  .detail-section { margin-bottom: 10px; }
-  .detail-section-title { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
-  .detail-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
-  .close-btn { float: right; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; background: none; border: none; padding: 0; }
-  .close-btn:hover { color: var(--color-text-primary); }
-  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1.25rem; font-size: 12px; color: var(--color-text-secondary); }
-  .legend-item { display: flex; align-items: center; gap: 5px; }
-  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
-  .hidden { display: none !important; }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  .wrap {
+    padding: 1.5rem 0;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active {
+    background: var(--color-background-info);
+    color: var(--color-text-info);
+    border-color: transparent;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover {
+    border-color: var(--color-border-primary);
+  }
+
+  .card.selected {
+    border: 1.5px solid var(--color-border-info);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .card-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.4;
+  }
+
+  .rank-badge {
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .rank-qw {
+    background: var(--color-background-success);
+    color: var(--color-text-success);
+  }
+
+  .rank-sb {
+    background: var(--color-background-warning);
+    color: var(--color-text-warning);
+  }
+
+  .rank-lt {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  .pill-cat {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+  }
+
+  .pill-freq {
+    background: var(--color-background-info);
+    color: var(--color-text-info);
+  }
+
+  .bars {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bar-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    width: 56px;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 5px;
+    background: var(--color-background-secondary);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+
+  .bar-impact {
+    background: #3b8bd4;
+  }
+
+  .bar-effort {
+    background: #e24b4a;
+  }
+
+  .bar-feasibility {
+    background: #1d9e75;
+  }
+
+  .bar-datadep {
+    background: #ba7517;
+  }
+
+  .bar-val {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    width: 24px;
+    text-align: right;
+  }
+
+  .tier-label {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+
+  .tier-qw {
+    background: var(--color-background-success);
+    color: var(--color-text-success);
+  }
+
+  .tier-sb {
+    background: var(--color-background-warning);
+    color: var(--color-text-warning);
+  }
+
+  .tier-lt {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+  }
+
+  .summary-note {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-top: 8px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    padding-top: 8px;
+  }
+
+  .detail-panel {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+    display: none;
+  }
+
+  .detail-panel.visible {
+    display: block;
+  }
+
+  .detail-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 12px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .detail-metric {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 12px;
+  }
+
+  .detail-metric-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .detail-metric-val {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .detail-section {
+    margin-bottom: 10px;
+  }
+
+  .detail-section-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .detail-text {
+    font-size: 13px;
+    color: var(--color-text-primary);
+    line-height: 1.6;
+  }
+
+  .close-btn {
+    float: right;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .close-btn:hover {
+    color: var(--color-text-primary);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+
+  .hidden {
+    display: none !important;
+  }
 </style>
 <div class="wrap">
   <div class="filters">
-    <button class="filter-btn active" onclick="setFilter('all')">All (20)</button>
-    <button class="filter-btn" onclick="setFilter('quick-win')">Quick wins</button>
-    <button class="filter-btn" onclick="setFilter('strategic')">Strategic bets</button>
-    <button class="filter-btn" onclick="setFilter('long-term')">Long-term</button>
-    <button class="filter-btn" onclick="setFilter('low-dep')">Low data dependency</button>
+    <button class="filter-btn active" onclick="setFilter('all')">
+      All (20)
+    </button>
+    <button class="filter-btn" onclick="setFilter('quick-win')">
+      Quick wins
+    </button>
+    <button class="filter-btn" onclick="setFilter('strategic')">
+      Strategic bets
+    </button>
+    <button class="filter-btn" onclick="setFilter('long-term')">
+      Long-term
+    </button>
+    <button class="filter-btn" onclick="setFilter('low-dep')">
+      Low data dependency
+    </button>
   </div>
   <div class="legend">
-    <span class="legend-item"><span class="legend-dot" style="background:#3B8BD4"></span>Impact</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#E24B4A"></span>Effort</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Feasibility</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#BA7517"></span>Data dependency</span>
+    <span class="legend-item"
+      ><span class="legend-dot" style="background: #3b8bd4"></span>Impact</span
+    >
+    <span class="legend-item"
+      ><span class="legend-dot" style="background: #e24b4a"></span>Effort</span
+    >
+    <span class="legend-item"
+      ><span class="legend-dot" style="background: #1d9e75"></span
+      >Feasibility</span
+    >
+    <span class="legend-item"
+      ><span class="legend-dot" style="background: #ba7517"></span>Data
+      dependency
+    </span>
   </div>
   <div class="grid" id="agent-grid"></div>
   <div class="detail-panel" id="detail-panel">
     <button class="close-btn" onclick="closeDetail()">✕ close</button>
     <div class="detail-title" id="dp-title"></div>
     <div class="detail-grid">
-      <div class="detail-metric"><div class="detail-metric-label">Impact</div><div class="detail-metric-val" id="dp-impact"></div></div>
-      <div class="detail-metric"><div class="detail-metric-label">Effort</div><div class="detail-metric-val" id="dp-effort"></div></div>
-      <div class="detail-metric"><div class="detail-metric-label">Feasibility</div><div class="detail-metric-val" id="dp-feasibility"></div></div>
-      <div class="detail-metric"><div class="detail-metric-label">Data dependency</div><div class="detail-metric-val" id="dp-dep"></div></div>
+      <div class="detail-metric">
+        <div class="detail-metric-label">Impact</div>
+        <div class="detail-metric-val" id="dp-impact"></div>
+      </div>
+      <div class="detail-metric">
+        <div class="detail-metric-label">Effort</div>
+        <div class="detail-metric-val" id="dp-effort"></div>
+      </div>
+      <div class="detail-metric">
+        <div class="detail-metric-label">Feasibility</div>
+        <div class="detail-metric-val" id="dp-feasibility"></div>
+      </div>
+      <div class="detail-metric">
+        <div class="detail-metric-label">Data dependency</div>
+        <div class="detail-metric-val" id="dp-dep"></div>
+      </div>
     </div>
-    <div class="detail-section"><div class="detail-section-title">Recommended approach</div><div class="detail-text" id="dp-approach"></div></div>
-    <div class="detail-section"><div class="detail-section-title">Key dependencies / risks</div><div class="detail-text" id="dp-risks"></div></div>
-    <div class="detail-section"><div class="detail-section-title">Why this tier</div><div class="detail-text" id="dp-why"></div></div>
+    <div class="detail-section">
+      <div class="detail-section-title">Recommended approach</div>
+      <div class="detail-text" id="dp-approach"></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Key dependencies / risks</div>
+      <div class="detail-text" id="dp-risks"></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Why this tier</div>
+      <div class="detail-text" id="dp-why"></div>
+    </div>
   </div>
 </div>
 <script>
-const agents = [
-  {
-    name: "Google Ads Standard Metrics",
-    cat: "Data Extraction", freq: "Daily", tier: "quick-win",
-    impact: 7, effort: 2, feasibility: 9, dataDep: 2,
-    approach: "Use Google Ads API with OAuth. Pull last 24 months, map Account IDs to client names, reformat columns. Output to CSV or database. This is essentially a scripted ETL with minimal logic.",
-    risks: "Google Ads API credentials and rate limits. Account ID-to-client mapping must be maintained manually.",
-    why: "Single API source, well-defined output schema, no analysis logic. Can be deployed in days."
-  },
-  {
-    name: "Meta Ads Standard Metrics",
-    cat: "Data Extraction", freq: "Daily", tier: "quick-win",
-    impact: 7, effort: 2, feasibility: 9, dataDep: 2,
-    approach: "Use Meta Marketing API (preferred over scraping). Authenticate per client, pull last 24 months, format to standard schema. Batch across clients.",
-    risks: "API access credentials per client. Facebook API version deprecation cycles. Pagination for large accounts.",
-    why: "Single API source, well-defined output schema. Mirrors Google Ads agent — can reuse the same pipeline pattern."
-  },
-  {
-    name: "Microsoft Ads Standard Metrics",
-    cat: "Data Extraction", freq: "Daily", tier: "quick-win",
-    impact: 6, effort: 2, feasibility: 8, dataDep: 2,
-    approach: "Use Microsoft Advertising API (Bing Ads API). Authenticate, filter by client and date, extract Spends/Clicks/Impressions, format output.",
-    risks: "Smaller client base than Google/Meta reduces ROI. API access setup per client.",
-    why: "Same pattern as Google/Meta agents. Lower impact due to smaller Bing client footprint but minimal incremental effort."
-  },
-  {
-    name: "Pinterest Standard Metrics",
-    cat: "Data Extraction", freq: "Daily", tier: "quick-win",
-    impact: 5, effort: 2, feasibility: 8, dataDep: 2,
-    approach: "Pinterest Ads API v5. Authenticate per advertiser ID, pull spend/clicks/impressions, calculate Clicks as sum of paid pin clicks + outbound clicks.",
-    risks: "Pinterest API is less mature. 'Clicks' is a derived field — verify definition with business stakeholders before automating.",
-    why: "Low effort, single source, clear spec. Lower impact tier due to Pinterest being a secondary channel for most clients."
-  },
-  {
-    name: "MNTN Standard Metrics",
-    cat: "Data Extraction", freq: "Daily", tier: "quick-win",
-    impact: 5, effort: 3, feasibility: 7, dataDep: 2,
-    approach: "Check if MNTN exposes a public API or data export. If not, explore CSV export automation. Standardize to the same schema as other platform agents.",
-    risks: "MNTN is a smaller platform — API maturity unknown. May require custom auth or scraping if no API.",
-    why: "Part of the standardized metrics family. Slightly higher effort if no official API exists."
-  },
-  {
-    name: "Decision Log / Workflow Automation",
-    cat: "Workflow Automation", freq: "Real-time", tier: "quick-win",
-    impact: 8, effort: 3, feasibility: 8, dataDep: 1,
-    approach: "Connect Bluedot/Google Docs to Asana via API. Use an LLM to parse call notes, extract action items, create and assign tasks with context. Define a simple trigger (doc shared → agent runs).",
-    risks: "Quality of call note transcripts affects output quality. Needs clear task-assignment rules. Human review step recommended initially.",
-    why: "Low data dependency (just call notes + Asana), immediate time savings, directly reduces manual effort after every client call."
-  },
-  {
-    name: "Analytics Deliverable Factory",
-    cat: "Analytics Automation", freq: "Daily", tier: "quick-win",
-    impact: 9, effort: 4, feasibility: 8, dataDep: 3,
-    approach: "Parameterize approved SQL queries, run QA checks (row counts, null rates, key metrics), update reporting templates, draft narrative summaries, push Asana approval task. Human approves before distribution.",
-    risks: "SQL query library must be maintained and version-controlled. QA baselines need initial setup. Approval workflow design is critical.",
-    why: "High recurring value — saves hours per report cycle. Moderate effort but well-scoped. Human-in-the-loop reduces risk."
-  },
-  {
-    name: "BandwidthIQ",
-    cat: "Resource Management", freq: "Daily", tier: "quick-win",
-    impact: 8, effort: 3, feasibility: 8, dataDep: 1,
-    approach: "Connect to Asana API, pull task data (assignee, effort, due date, status), compute capacity scores, flag overloads, push weekly Slack/email summary. No external data needed.",
-    risks: "Effort estimates in Asana must be consistently populated — garbage in, garbage out. Phase 2 PTO integration adds complexity.",
-    why: "Single data source (Asana), clear output, directly addresses team burnout risk. Can ship Phase 1 quickly and iterate."
-  },
-  {
-    name: "GA4 Auditing Assistant",
-    cat: "Analytics Audit", freq: "Daily", tier: "quick-win",
-    impact: 8, effort: 4, feasibility: 7, dataDep: 3,
-    approach: "Use headless browser (Playwright/Puppeteer) to crawl sites. Capture GA4 cookies, track session/client ID changes, detect lead forms and hidden fields. Generate structured audit report.",
-    risks: "Dynamic SPAs may be hard to crawl reliably. Requires headless browser infra. Some sites may block crawlers.",
-    why: "High value for paid media clients — attribution errors cost real money. Automatable with existing web tooling."
-  },
-  {
-    name: "Campaign Performance Agent",
-    cat: "Campaign Analytics", freq: "Daily", tier: "strategic",
-    impact: 9, effort: 5, feasibility: 7, dataDep: 4,
-    approach: "Pull from Google Ads API + Meta Ads API. Ingest campaign report CSVs and budget files. Calculate ROI/CPA/CVR per campaign. Flag underperformers against thresholds. Generate daily summary report.",
-    risks: "4 data sources with different schemas and refresh rates. Budget data format is unspecified — needs standardization. Threshold definitions need business sign-off.",
-    why: "High impact but multi-source complexity. Build after the individual platform metric agents are stable — reuse their data pipelines."
-  },
-  {
-    name: "Proactive Client Insights Communicator",
-    cat: "Client Communication", freq: "Weekly", tier: "strategic",
-    impact: 9, effort: 6, feasibility: 7, dataDep: 3,
-    approach: "Two-path agent on Snowflake data. Path 1: YoY sales analysis with drill-down and root cause summary. Path 2: Model performance analysis with campaign recommendations. Output: email drafts + Asana tasks for AM review.",
-    risks: "Root cause analysis quality depends heavily on LLM reasoning over tabular data. Snowflake access setup. SQL query accuracy is critical.",
-    why: "Very high business value — automates analyst work for client reporting. Moderate-high effort due to two analysis paths and email drafting quality bar."
-  },
-  {
-    name: "InAcadia (AcadiaGPT Slack Bot)",
-    cat: "Internal Knowledge", freq: "Daily", tier: "strategic",
-    impact: 9, effort: 7, feasibility: 7, dataDep: 5,
-    approach: "Build RAG pipeline: index Google Drive, Slack, Gmail, Asana, Bluedot into a vector DB. Embed user queries, retrieve relevant chunks, generate grounded answers with citations. Deploy as Slack bot.",
-    risks: "Data ingestion pipeline for 5+ sources is complex. Permission scoping (user can only see their own data) is non-trivial. Ongoing index freshness. Cold start quality depends on corpus quality.",
-    why: "High long-term value and strong employee adoption potential. Investment in RAG infra pays off across multiple agents."
-  },
-  {
-    name: "AdPulse Intelligence Agent",
-    cat: "Creative Intelligence", freq: "Real-time", tier: "strategic",
-    impact: 8, effort: 6, feasibility: 7, dataDep: 3,
-    approach: "Connect Meta Graph API to pull ad comments. Run NLP pipeline: spam filter → sentiment classification → topic modeling. Surface top 5 positive/negative themes per ad. Deliver via Slack digest or email. Real-time alerts for sentiment spikes.",
-    risks: "Meta Graph API comment access has rate limits and permission requirements. Comment spam filtering is non-trivial. Topic model quality needs tuning per vertical.",
-    why: "Novel value proposition — most teams ignore comment data. Moderate complexity NLP pipeline. Real-time requirement adds infra overhead."
-  },
-  {
-    name: "Data Quality Copilot",
-    cat: "Data Operations", freq: "Daily", tier: "strategic",
-    impact: 8, effort: 6, feasibility: 7, dataDep: 4,
-    approach: "Monitor data quality signals (freshness, row counts, null rates, schema drift). Summarize health across datasets. Suggest new DQ checks via LLM. Push Slack alerts for critical issues. Dashboard with table health scores.",
-    risks: "Requires metadata and baseline access across many tables. 'Suggest random test queries' feature needs guardrails. Alert fatigue is a real risk — sensitivity tuning needed.",
-    why: "High foundational value for data reliability. Complexity comes from breadth of signals and the evolving test suggestion loop."
-  },
-  {
-    name: "Market Context Tracker",
-    cat: "Market Intelligence", freq: "Weekly", tier: "strategic",
-    impact: 8, effort: 7, feasibility: 6, dataDep: 6,
-    approach: "Ingest internal KPIs + external signals (weather, events, news, macroeconomic). Correlate KPI changes with external factors. Generate plain-English explanations. Flag for analyst review. Draft summary email.",
-    risks: "6+ data sources with varying reliability. Correlation ≠ causation — LLM explanations need clear caveats. External data APIs (weather, news, events) each need integration and maintenance.",
-    why: "Ambitious but very valuable if reliable. Data dependency is the main risk — scope down to 2-3 external sources first."
-  },
-  {
-    name: "MMM Data Prep",
-    cat: "Data Preparation", freq: "Monthly", tier: "strategic",
-    impact: 7, effort: 6, feasibility: 6, dataDep: 5,
-    approach: "Pull spend from ThoughtSpot, generate QA summary, build media spend sheet, populate napkin math / priors sheet. Run spike analysis with z-scores and link to holidays/campaigns.",
-    risks: "ThoughtSpot + multiple sheet templates = fragile data pipeline. Adstock logic and prior calculations are domain-specific — need expert validation. Low frequency reduces urgency.",
-    why: "Valuable for MMM practitioners but narrow audience internally. High complexity for monthly cadence. Prioritize after core reporting agents."
-  },
-  {
-    name: "Retail Marketplace: Creative Audit",
-    cat: "Creative Ops", freq: "Daily", tier: "long-term",
-    impact: 7, effort: 7, feasibility: 5, dataDep: 4,
-    approach: "Ingest creative assets (images, video, copy) from retail marketplace. Check against brand guidelines, platform policies, and performance benchmarks. Flag non-compliant or underperforming assets.",
-    risks: "Brand guideline codification is non-trivial. Visual compliance requires multimodal AI. Performance benchmarking needs historical data. Spec is underspecified — needs more detail.",
-    why: "Good concept but needs a clearer, more detailed spec before building. Visual AI compliance is complex and error-prone."
-  },
-  {
-    name: "Retail Marketplace: Keyword Classification",
-    cat: "Search Optimization", freq: "Daily", tier: "long-term",
-    impact: 6, effort: 6, feasibility: 6, dataDep: 3,
-    approach: "Pull keyword data from retail marketplace. Apply NLP classification model to assign categories. Optionally update search index. Requires a taxonomy/category list as ground truth.",
-    risks: "Taxonomy must be defined and maintained. Classification accuracy needs continuous evaluation. Marketplace API access may be restricted.",
-    why: "Clear use case but requires taxonomy definition work upfront and ongoing model accuracy maintenance."
-  },
-  {
-    name: "Referbot",
-    cat: "HR Automation", freq: "Weekly", tier: "long-term",
-    impact: 6, effort: 8, feasibility: 5, dataDep: 5,
-    approach: "Connect ATS + LinkedIn network data + internal skills DB. Match open roles to employee networks. Generate personalized referral nudges. Track referral pipeline and send reminders.",
-    risks: "LinkedIn data access is heavily restricted (TOS). ATS integration varies by system. Employee network analysis is privacy-sensitive. Spec references an external doc — needs detailed review.",
-    why: "Interesting but highest data dependency of all ideas. LinkedIn access constraints alone make this high-risk to build reliably."
+  const agents = [
+    {
+      name: "Google Ads Standard Metrics",
+      cat: "Data Extraction",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 7,
+      effort: 2,
+      feasibility: 9,
+      dataDep: 2,
+      approach:
+        "Use Google Ads API with OAuth. Pull last 24 months, map Account IDs to client names, reformat columns. Output to CSV or database. This is essentially a scripted ETL with minimal logic.",
+      risks:
+        "Google Ads API credentials and rate limits. Account ID-to-client mapping must be maintained manually.",
+      why: "Single API source, well-defined output schema, no analysis logic. Can be deployed in days.",
+    },
+    {
+      name: "Meta Ads Standard Metrics",
+      cat: "Data Extraction",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 7,
+      effort: 2,
+      feasibility: 9,
+      dataDep: 2,
+      approach:
+        "Use Meta Marketing API (preferred over scraping). Authenticate per client, pull last 24 months, format to standard schema. Batch across clients.",
+      risks:
+        "API access credentials per client. Facebook API version deprecation cycles. Pagination for large accounts.",
+      why: "Single API source, well-defined output schema. Mirrors Google Ads agent — can reuse the same pipeline pattern.",
+    },
+    {
+      name: "Microsoft Ads Standard Metrics",
+      cat: "Data Extraction",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 6,
+      effort: 2,
+      feasibility: 8,
+      dataDep: 2,
+      approach:
+        "Use Microsoft Advertising API (Bing Ads API). Authenticate, filter by client and date, extract Spends/Clicks/Impressions, format output.",
+      risks:
+        "Smaller client base than Google/Meta reduces ROI. API access setup per client.",
+      why: "Same pattern as Google/Meta agents. Lower impact due to smaller Bing client footprint but minimal incremental effort.",
+    },
+    {
+      name: "Pinterest Standard Metrics",
+      cat: "Data Extraction",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 5,
+      effort: 2,
+      feasibility: 8,
+      dataDep: 2,
+      approach:
+        "Pinterest Ads API v5. Authenticate per advertiser ID, pull spend/clicks/impressions, calculate Clicks as sum of paid pin clicks + outbound clicks.",
+      risks:
+        "Pinterest API is less mature. 'Clicks' is a derived field — verify definition with business stakeholders before automating.",
+      why: "Low effort, single source, clear spec. Lower impact tier due to Pinterest being a secondary channel for most clients.",
+    },
+    {
+      name: "MNTN Standard Metrics",
+      cat: "Data Extraction",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 5,
+      effort: 3,
+      feasibility: 7,
+      dataDep: 2,
+      approach:
+        "Check if MNTN exposes a public API or data export. If not, explore CSV export automation. Standardize to the same schema as other platform agents.",
+      risks:
+        "MNTN is a smaller platform — API maturity unknown. May require custom auth or scraping if no API.",
+      why: "Part of the standardized metrics family. Slightly higher effort if no official API exists.",
+    },
+    {
+      name: "Decision Log / Workflow Automation",
+      cat: "Workflow Automation",
+      freq: "Real-time",
+      tier: "quick-win",
+      impact: 8,
+      effort: 3,
+      feasibility: 8,
+      dataDep: 1,
+      approach:
+        "Connect Bluedot/Google Docs to Asana via API. Use an LLM to parse call notes, extract action items, create and assign tasks with context. Define a simple trigger (doc shared → agent runs).",
+      risks:
+        "Quality of call note transcripts affects output quality. Needs clear task-assignment rules. Human review step recommended initially.",
+      why: "Low data dependency (just call notes + Asana), immediate time savings, directly reduces manual effort after every client call.",
+    },
+    {
+      name: "Analytics Deliverable Factory",
+      cat: "Analytics Automation",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 9,
+      effort: 4,
+      feasibility: 8,
+      dataDep: 3,
+      approach:
+        "Parameterize approved SQL queries, run QA checks (row counts, null rates, key metrics), update reporting templates, draft narrative summaries, push Asana approval task. Human approves before distribution.",
+      risks:
+        "SQL query library must be maintained and version-controlled. QA baselines need initial setup. Approval workflow design is critical.",
+      why: "High recurring value — saves hours per report cycle. Moderate effort but well-scoped. Human-in-the-loop reduces risk.",
+    },
+    {
+      name: "BandwidthIQ",
+      cat: "Resource Management",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 8,
+      effort: 3,
+      feasibility: 8,
+      dataDep: 1,
+      approach:
+        "Connect to Asana API, pull task data (assignee, effort, due date, status), compute capacity scores, flag overloads, push weekly Slack/email summary. No external data needed.",
+      risks:
+        "Effort estimates in Asana must be consistently populated — garbage in, garbage out. Phase 2 PTO integration adds complexity.",
+      why: "Single data source (Asana), clear output, directly addresses team burnout risk. Can ship Phase 1 quickly and iterate.",
+    },
+    {
+      name: "GA4 Auditing Assistant",
+      cat: "Analytics Audit",
+      freq: "Daily",
+      tier: "quick-win",
+      impact: 8,
+      effort: 4,
+      feasibility: 7,
+      dataDep: 3,
+      approach:
+        "Use headless browser (Playwright/Puppeteer) to crawl sites. Capture GA4 cookies, track session/client ID changes, detect lead forms and hidden fields. Generate structured audit report.",
+      risks:
+        "Dynamic SPAs may be hard to crawl reliably. Requires headless browser infra. Some sites may block crawlers.",
+      why: "High value for paid media clients — attribution errors cost real money. Automatable with existing web tooling.",
+    },
+    {
+      name: "Campaign Performance Agent",
+      cat: "Campaign Analytics",
+      freq: "Daily",
+      tier: "strategic",
+      impact: 9,
+      effort: 5,
+      feasibility: 7,
+      dataDep: 4,
+      approach:
+        "Pull from Google Ads API + Meta Ads API. Ingest campaign report CSVs and budget files. Calculate ROI/CPA/CVR per campaign. Flag underperformers against thresholds. Generate daily summary report.",
+      risks:
+        "4 data sources with different schemas and refresh rates. Budget data format is unspecified — needs standardization. Threshold definitions need business sign-off.",
+      why: "High impact but multi-source complexity. Build after the individual platform metric agents are stable — reuse their data pipelines.",
+    },
+    {
+      name: "Proactive Client Insights Communicator",
+      cat: "Client Communication",
+      freq: "Weekly",
+      tier: "strategic",
+      impact: 9,
+      effort: 6,
+      feasibility: 7,
+      dataDep: 3,
+      approach:
+        "Two-path agent on Snowflake data. Path 1: YoY sales analysis with drill-down and root cause summary. Path 2: Model performance analysis with campaign recommendations. Output: email drafts + Asana tasks for AM review.",
+      risks:
+        "Root cause analysis quality depends heavily on LLM reasoning over tabular data. Snowflake access setup. SQL query accuracy is critical.",
+      why: "Very high business value — automates analyst work for client reporting. Moderate-high effort due to two analysis paths and email drafting quality bar.",
+    },
+    {
+      name: "InAcadia (AcadiaGPT Slack Bot)",
+      cat: "Internal Knowledge",
+      freq: "Daily",
+      tier: "strategic",
+      impact: 9,
+      effort: 7,
+      feasibility: 7,
+      dataDep: 5,
+      approach:
+        "Build RAG pipeline: index Google Drive, Slack, Gmail, Asana, Bluedot into a vector DB. Embed user queries, retrieve relevant chunks, generate grounded answers with citations. Deploy as Slack bot.",
+      risks:
+        "Data ingestion pipeline for 5+ sources is complex. Permission scoping (user can only see their own data) is non-trivial. Ongoing index freshness. Cold start quality depends on corpus quality.",
+      why: "High long-term value and strong employee adoption potential. Investment in RAG infra pays off across multiple agents.",
+    },
+    {
+      name: "AdPulse Intelligence Agent",
+      cat: "Creative Intelligence",
+      freq: "Real-time",
+      tier: "strategic",
+      impact: 8,
+      effort: 6,
+      feasibility: 7,
+      dataDep: 3,
+      approach:
+        "Connect Meta Graph API to pull ad comments. Run NLP pipeline: spam filter → sentiment classification → topic modeling. Surface top 5 positive/negative themes per ad. Deliver via Slack digest or email. Real-time alerts for sentiment spikes.",
+      risks:
+        "Meta Graph API comment access has rate limits and permission requirements. Comment spam filtering is non-trivial. Topic model quality needs tuning per vertical.",
+      why: "Novel value proposition — most teams ignore comment data. Moderate complexity NLP pipeline. Real-time requirement adds infra overhead.",
+    },
+    {
+      name: "Data Quality Copilot",
+      cat: "Data Operations",
+      freq: "Daily",
+      tier: "strategic",
+      impact: 8,
+      effort: 6,
+      feasibility: 7,
+      dataDep: 4,
+      approach:
+        "Monitor data quality signals (freshness, row counts, null rates, schema drift). Summarize health across datasets. Suggest new DQ checks via LLM. Push Slack alerts for critical issues. Dashboard with table health scores.",
+      risks:
+        "Requires metadata and baseline access across many tables. 'Suggest random test queries' feature needs guardrails. Alert fatigue is a real risk — sensitivity tuning needed.",
+      why: "High foundational value for data reliability. Complexity comes from breadth of signals and the evolving test suggestion loop.",
+    },
+    {
+      name: "Market Context Tracker",
+      cat: "Market Intelligence",
+      freq: "Weekly",
+      tier: "strategic",
+      impact: 8,
+      effort: 7,
+      feasibility: 6,
+      dataDep: 6,
+      approach:
+        "Ingest internal KPIs + external signals (weather, events, news, macroeconomic). Correlate KPI changes with external factors. Generate plain-English explanations. Flag for analyst review. Draft summary email.",
+      risks:
+        "6+ data sources with varying reliability. Correlation ≠ causation — LLM explanations need clear caveats. External data APIs (weather, news, events) each need integration and maintenance.",
+      why: "Ambitious but very valuable if reliable. Data dependency is the main risk — scope down to 2-3 external sources first.",
+    },
+    {
+      name: "MMM Data Prep",
+      cat: "Data Preparation",
+      freq: "Monthly",
+      tier: "strategic",
+      impact: 7,
+      effort: 6,
+      feasibility: 6,
+      dataDep: 5,
+      approach:
+        "Pull spend from ThoughtSpot, generate QA summary, build media spend sheet, populate napkin math / priors sheet. Run spike analysis with z-scores and link to holidays/campaigns.",
+      risks:
+        "ThoughtSpot + multiple sheet templates = fragile data pipeline. Adstock logic and prior calculations are domain-specific — need expert validation. Low frequency reduces urgency.",
+      why: "Valuable for MMM practitioners but narrow audience internally. High complexity for monthly cadence. Prioritize after core reporting agents.",
+    },
+    {
+      name: "Retail Marketplace: Creative Audit",
+      cat: "Creative Ops",
+      freq: "Daily",
+      tier: "long-term",
+      impact: 7,
+      effort: 7,
+      feasibility: 5,
+      dataDep: 4,
+      approach:
+        "Ingest creative assets (images, video, copy) from retail marketplace. Check against brand guidelines, platform policies, and performance benchmarks. Flag non-compliant or underperforming assets.",
+      risks:
+        "Brand guideline codification is non-trivial. Visual compliance requires multimodal AI. Performance benchmarking needs historical data. Spec is underspecified — needs more detail.",
+      why: "Good concept but needs a clearer, more detailed spec before building. Visual AI compliance is complex and error-prone.",
+    },
+    {
+      name: "Retail Marketplace: Keyword Classification",
+      cat: "Search Optimization",
+      freq: "Daily",
+      tier: "long-term",
+      impact: 6,
+      effort: 6,
+      feasibility: 6,
+      dataDep: 3,
+      approach:
+        "Pull keyword data from retail marketplace. Apply NLP classification model to assign categories. Optionally update search index. Requires a taxonomy/category list as ground truth.",
+      risks:
+        "Taxonomy must be defined and maintained. Classification accuracy needs continuous evaluation. Marketplace API access may be restricted.",
+      why: "Clear use case but requires taxonomy definition work upfront and ongoing model accuracy maintenance.",
+    },
+    {
+      name: "Referbot",
+      cat: "HR Automation",
+      freq: "Weekly",
+      tier: "long-term",
+      impact: 6,
+      effort: 8,
+      feasibility: 5,
+      dataDep: 5,
+      approach:
+        "Connect ATS + LinkedIn network data + internal skills DB. Match open roles to employee networks. Generate personalized referral nudges. Track referral pipeline and send reminders.",
+      risks:
+        "LinkedIn data access is heavily restricted (TOS). ATS integration varies by system. Employee network analysis is privacy-sensitive. Spec references an external doc — needs detailed review.",
+      why: "Interesting but highest data dependency of all ideas. LinkedIn access constraints alone make this high-risk to build reliably.",
+    },
+  ];
+
+  let currentFilter = "all";
+  let selectedCard = null;
+
+  function score(val, max = 10) {
+    return Math.round((val / max) * 100);
   }
-];
 
-let currentFilter = 'all';
-let selectedCard = null;
+  function tierClass(tier) {
+    if (tier === "quick-win") return "tier-qw";
+    if (tier === "strategic") return "tier-sb";
+    return "tier-lt";
+  }
 
-function score(val, max=10) { return Math.round((val/max)*100); }
+  function tierLabel(tier) {
+    if (tier === "quick-win") return "Quick win";
+    if (tier === "strategic") return "Strategic bet";
+    return "Long-term";
+  }
 
-function tierClass(tier) {
-  if (tier === 'quick-win') return 'tier-qw';
-  if (tier === 'strategic') return 'tier-sb';
-  return 'tier-lt';
-}
-function tierLabel(tier) {
-  if (tier === 'quick-win') return 'Quick win';
-  if (tier === 'strategic') return 'Strategic bet';
-  return 'Long-term';
-}
-function rankClass(tier) {
-  if (tier === 'quick-win') return 'rank-qw';
-  if (tier === 'strategic') return 'rank-sb';
-  return 'rank-lt';
-}
+  function rankClass(tier) {
+    if (tier === "quick-win") return "rank-qw";
+    if (tier === "strategic") return "rank-sb";
+    return "rank-lt";
+  }
 
-function renderCards() {
-  const grid = document.getElementById('agent-grid');
-  grid.innerHTML = '';
-  let rank = 0;
-  agents.forEach((a, i) => {
-    const show = currentFilter === 'all' ||
-      (currentFilter === 'quick-win' && a.tier === 'quick-win') ||
-      (currentFilter === 'strategic' && a.tier === 'strategic') ||
-      (currentFilter === 'long-term' && a.tier === 'long-term') ||
-      (currentFilter === 'low-dep' && a.dataDep <= 2);
-    if (!show) return;
-    rank++;
-    const card = document.createElement('div');
-    card.className = 'card' + (selectedCard === i ? ' selected' : '');
-    card.dataset.idx = i;
-    card.innerHTML = `
+  function renderCards() {
+    const grid = document.getElementById("agent-grid");
+    grid.innerHTML = "";
+    let rank = 0;
+    agents.forEach((a, i) => {
+      const show =
+        currentFilter === "all" ||
+        (currentFilter === "quick-win" && a.tier === "quick-win") ||
+        (currentFilter === "strategic" && a.tier === "strategic") ||
+        (currentFilter === "long-term" && a.tier === "long-term") ||
+        (currentFilter === "low-dep" && a.dataDep <= 2);
+      if (!show) return;
+      rank++;
+      const card = document.createElement("div");
+      card.className = "card" + (selectedCard === i ? " selected" : "");
+      card.dataset.idx = i;
+      card.innerHTML = `
       <div class="card-header">
         <div class="card-name">${a.name}</div>
         <div class="rank-badge ${rankClass(a.tier)}">${rank}</div>
@@ -291,40 +740,46 @@ function renderCards() {
         <div class="bar-row"><span class="bar-label">Data deps</span><div class="bar-track"><div class="bar-fill bar-datadep" style="width:${score(a.dataDep)}%"></div></div><span class="bar-val">${a.dataDep}/10</span></div>
       </div>
     `;
-    card.onclick = () => openDetail(i);
-    grid.appendChild(card);
-  });
-}
+      card.onclick = () => openDetail(i);
+      grid.appendChild(card);
+    });
+  }
 
-function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  closeDetail();
+  function setFilter(f) {
+    currentFilter = f;
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach((b) => b.classList.remove("active"));
+    event.target.classList.add("active");
+    closeDetail();
+    renderCards();
+  }
+
+  function openDetail(i) {
+    selectedCard = i;
+    const a = agents[i];
+    document.getElementById("dp-title").textContent = a.name;
+    document.getElementById("dp-impact").textContent = a.impact + "/10";
+    document.getElementById("dp-effort").textContent = a.effort + "/10";
+    document.getElementById("dp-feasibility").textContent =
+      a.feasibility + "/10";
+    document.getElementById("dp-dep").textContent = a.dataDep + "/10";
+    document.getElementById("dp-approach").textContent = a.approach;
+    document.getElementById("dp-risks").textContent = a.risks;
+    document.getElementById("dp-why").textContent = a.why;
+    document.getElementById("detail-panel").classList.add("visible");
+    document.getElementById("detail-panel").scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+    renderCards();
+  }
+
+  function closeDetail() {
+    selectedCard = null;
+    document.getElementById("detail-panel").classList.remove("visible");
+    renderCards();
+  }
+
   renderCards();
-}
-
-function openDetail(i) {
-  selectedCard = i;
-  const a = agents[i];
-  document.getElementById('dp-title').textContent = a.name;
-  document.getElementById('dp-impact').textContent = a.impact + '/10';
-  document.getElementById('dp-effort').textContent = a.effort + '/10';
-  document.getElementById('dp-feasibility').textContent = a.feasibility + '/10';
-  document.getElementById('dp-dep').textContent = a.dataDep + '/10';
-  document.getElementById('dp-approach').textContent = a.approach;
-  document.getElementById('dp-risks').textContent = a.risks;
-  document.getElementById('dp-why').textContent = a.why;
-  document.getElementById('detail-panel').classList.add('visible');
-  document.getElementById('detail-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  renderCards();
-}
-
-function closeDetail() {
-  selectedCard = null;
-  document.getElementById('detail-panel').classList.remove('visible');
-  renderCards();
-}
-
-renderCards();
 </script>
